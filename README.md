@@ -40,7 +40,7 @@ The trading strategy places orders based on the following conditions:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bitget-trading-bot.git
+git clone https://github.com/shaumne/tony_new_bot
 cd bitget-trading-bot
 ```
 
