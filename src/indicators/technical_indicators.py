@@ -17,7 +17,10 @@ def calculate_ema(data, period):
     Returns:
         pd.Series: EMA values
     """
-    return ta.trend.ema_indicator(data['close'], window=period)
+    ema = ta.trend.ema_indicator(data['close'], window=period)
+    # İlk değeri kapanış fiyatıyla doldur
+    ema.iloc[0] = data['close'].iloc[0]
+    return ema
 
 
 def calculate_macd(data, fast_period, slow_period, signal_period):

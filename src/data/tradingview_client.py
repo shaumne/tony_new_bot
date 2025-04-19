@@ -9,16 +9,15 @@ from tradingview_ta import TA_Handler, Interval
 
 logger = logging.getLogger(__name__)
 
-# Map timeframes to TradingView intervals
+# Map timeframes to TradingView intervals - kullanılabilir sabitler için Interval sınıfını kontrol ettik
 TIMEFRAME_MAPPING = {
     '1m': Interval.INTERVAL_1_MINUTE,
-    '3m': Interval.INTERVAL_3_MINUTE,
-    '5m': Interval.INTERVAL_5_MINUTE,
-    '15m': Interval.INTERVAL_15_MINUTE,
-    '30m': Interval.INTERVAL_30_MINUTE,
+    '5m': Interval.INTERVAL_5_MINUTES,
+    '15m': Interval.INTERVAL_15_MINUTES,
+    '30m': Interval.INTERVAL_30_MINUTES,
     '1h': Interval.INTERVAL_1_HOUR,
-    '2h': Interval.INTERVAL_2_HOUR,
-    '4h': Interval.INTERVAL_4_HOUR,
+    '2h': Interval.INTERVAL_2_HOURS,
+    '4h': Interval.INTERVAL_4_HOURS,
     '1d': Interval.INTERVAL_1_DAY,
     '1W': Interval.INTERVAL_1_WEEK,
     '1M': Interval.INTERVAL_1_MONTH

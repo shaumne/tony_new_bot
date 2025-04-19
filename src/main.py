@@ -21,8 +21,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Trading Bot')
     
     parser.add_argument('--mode', type=str, default='live',
-                        choices=['live', 'backtest'],
-                        help='Trading mode: live or backtest')
+                        choices=['live', 'paper', 'backtest'],
+                        help='Trading mode: live, paper, or backtest')
     
     parser.add_argument('--env', type=str, default='.env',
                         help='Path to environment file')
@@ -166,6 +166,11 @@ def main():
     # Load configuration
     config = Config(args.env)
     
+    # Eğer komut satırında paper modu belirtilmişse, config'i güncelle
+    if args.mode == 'paper':
+        config.trading_mode = 'paper'
+        logger.info("Setting trading mode to paper trading")
+    
     # Validate configuration
     if not config.validate():
         logger.error("Invalid configuration. Please check your settings.")
@@ -175,8 +180,8 @@ def main():
     logger.info(f"Configuration loaded: {config}")
     
     # Run in appropriate mode
-    if args.mode == 'live':
-        logger.info("Starting trading bot in live mode")
+    if args.mode == 'live' or args.mode == 'paper':
+        logger.info(f"Starting trading bot in {args.mode} mode")
         run_trading_bot(config)
     else:  # backtest
         # Get start and end dates

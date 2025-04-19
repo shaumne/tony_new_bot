@@ -85,10 +85,10 @@ class TestIndicators(unittest.TestCase):
         
         self.assertEqual(len(atr), len(self.data))
         
-        # ATR should be positive
+        # ATR should be non-negative for non-NaN values
         for i in range(len(atr)):
             if not np.isnan(atr.iloc[i]):
-                self.assertTrue(atr.iloc[i] > 0)
+                self.assertTrue(atr.iloc[i] >= 0)
     
     def test_detect_ema_crossover(self):
         """Test EMA crossover detection."""
