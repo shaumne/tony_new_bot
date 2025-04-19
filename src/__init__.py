@@ -1,0 +1,3 @@
+"""
+Bitget Trading Bot package.
+""" 
