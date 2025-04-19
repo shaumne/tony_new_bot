@@ -35,8 +35,7 @@ The strategy is designed to identify potential trend reversals and momentum shif
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/bitget-trading-bot.git
-cd bitget-trading-bot
+git clone https://github.com/shaumne/tony_new_bot
 ```
 
 2. Run the setup script:
