@@ -14,6 +14,7 @@ from src.utils.email_notifier import EmailNotifier
 from src.data.bitget_client import BitgetClient
 from src.data.tradingview_client import TradingViewClient
 from src.strategy.ema_macd_vwap_strategy import EMAMACDVWAPStrategy
+from src.strategy.ema_macd_strategy import EMAMACDStrategy
 
 
 def parse_arguments():
@@ -32,6 +33,10 @@ def parse_arguments():
     
     parser.add_argument('--backtest-end', type=str,
                         help='End date for backtesting (YYYY-MM-DD)')
+    
+    parser.add_argument('--strategy', type=str, default='ema_macd_vwap',
+                        choices=['ema_macd_vwap', 'ema_macd'],
+                        help='Strategy to use')
     
     return parser.parse_args()
 
@@ -83,12 +88,45 @@ def setup_email_notifier(config):
     return None
 
 
-def run_trading_bot(config):
+def create_strategy(strategy_name, bitget_client, tradingview_client, config, email_notifier):
+    """
+    Create a strategy instance.
+    
+    Args:
+        strategy_name: Name of the strategy
+        bitget_client: Bitget client
+        tradingview_client: TradingView client
+        config: Configuration object
+        email_notifier: Email notifier
+        
+    Returns:
+        Strategy instance
+    """
+    if strategy_name == 'ema_macd_vwap':
+        return EMAMACDVWAPStrategy(
+            bitget_client,
+            tradingview_client,
+            config,
+            email_notifier
+        )
+    elif strategy_name == 'ema_macd':
+        return EMAMACDStrategy(
+            bitget_client,
+            tradingview_client,
+            config,
+            email_notifier
+        )
+    else:
+        raise ValueError(f"Unknown strategy: {strategy_name}")
+
+
+def run_trading_bot(config, strategy_name):
     """
     Run the trading bot.
     
     Args:
         config: Configuration object
+        strategy_name: Name of the strategy
     """
     # Set up clients
     bitget_client, tradingview_client = setup_clients(config)
@@ -97,7 +135,8 @@ def run_trading_bot(config):
     email_notifier = setup_email_notifier(config)
     
     # Initialize strategy
-    strategy = EMAMACDVWAPStrategy(
+    strategy = create_strategy(
+        strategy_name,
         bitget_client,
         tradingview_client,
         config,
@@ -119,7 +158,7 @@ def run_trading_bot(config):
         print("Trading bot stopped")
 
 
-def run_backtest(config, start_date, end_date):
+def run_backtest(config, start_date, end_date, strategy_name):
     """
     Run backtest.
     
@@ -127,12 +166,14 @@ def run_backtest(config, start_date, end_date):
         config: Configuration object
         start_date: Start date
         end_date: End date
+        strategy_name: Name of the strategy
     """
     # Set up clients
     bitget_client, tradingview_client = setup_clients(config)
     
     # Initialize strategy
-    strategy = EMAMACDVWAPStrategy(
+    strategy = create_strategy(
+        strategy_name,
         bitget_client,
         tradingview_client,
         config,
@@ -144,6 +185,7 @@ def run_backtest(config, start_date, end_date):
     
     # Print results
     print("\nBacktest Results:")
+    print(f"Strategy: {strategy_name}")
     print(f"Symbol: {config.symbol}")
     print(f"Timeframe: {config.timeframe}")
     print(f"Period: {start_date} to {end_date}")
@@ -166,6 +208,10 @@ def main():
     # Load configuration
     config = Config(args.env)
     
+    # Set strategy
+    strategy_name = args.strategy
+    logger.info(f"Using strategy: {strategy_name}")
+    
     # Eğer komut satırında paper modu belirtilmişse, config'i güncelle
     if args.mode == 'paper':
         config.trading_mode = 'paper'
@@ -182,14 +228,14 @@ def main():
     # Run in appropriate mode
     if args.mode == 'live' or args.mode == 'paper':
         logger.info(f"Starting trading bot in {args.mode} mode")
-        run_trading_bot(config)
+        run_trading_bot(config, strategy_name)
     else:  # backtest
         # Get start and end dates
         start_date = args.backtest_start or config.backtest_start_date
         end_date = args.backtest_end or config.backtest_end_date
         
         logger.info(f"Starting backtest from {start_date} to {end_date}")
-        run_backtest(config, start_date, end_date)
+        run_backtest(config, start_date, end_date, strategy_name)
 
 
 if __name__ == "__main__":
